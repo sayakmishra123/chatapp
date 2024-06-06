@@ -1,5 +1,6 @@
 import 'package:chatapp/models/message.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Messagecard extends StatefulWidget {
   late UserMsg msg;
@@ -11,6 +12,8 @@ class Messagecard extends StatefulWidget {
 }
 
 class _MessagecardState extends State<Messagecard> {
+  
+ 
   @override
   Widget build(BuildContext context) {
     return widget.email == widget.msg.fromId ? _greenmsg() : _blueMsg();
@@ -23,15 +26,18 @@ class _MessagecardState extends State<Messagecard> {
       children: [
         Flexible(
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+            padding: widget.msg.msg.length<5? EdgeInsets.symmetric(vertical: 5, horizontal: 18):EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             margin: EdgeInsets.symmetric(
                 horizontal: MediaQuery.sizeOf(context).width * 0.04,
                 vertical: MediaQuery.sizeOf(context).height * 0.01),
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  topRight: Radius.circular(20)),
-              color: Color.fromARGB(255, 175, 200, 238),
+                  // bottomLeft: Radius.circular(20),
+                  // topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                  topLeft: Radius.circular(20),
+                  ),
+              color: Color.fromARGB(255, 255, 255, 255),
             ),
             child: Text(
               widget.msg.msg,
@@ -41,7 +47,7 @@ class _MessagecardState extends State<Messagecard> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text(widget.msg.sent),
+          child:Text(formatedTime(widget.msg.sent)),
         )
       ],
     );
@@ -54,11 +60,11 @@ class _MessagecardState extends State<Messagecard> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text(widget.msg.sent),
+          child: Text(formatedTime(widget.msg.sent)),
         ),
         Flexible(
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+           padding:widget.msg.msg.length<5? EdgeInsets.symmetric(vertical: 5, horizontal: 18):EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             margin: EdgeInsets.symmetric(
                 horizontal: MediaQuery.sizeOf(context).width * 0.04,
                 vertical: MediaQuery.sizeOf(context).height * 0.01),
@@ -66,8 +72,10 @@ class _MessagecardState extends State<Messagecard> {
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(20),
-                  topRight: Radius.circular(20)),
-              color: Color.fromARGB(255, 175, 238, 177),
+                  topRight: Radius.circular(20),
+                 ),
+                  
+              color: Color.fromRGBO(144, 164, 174, 1),
             ),
 
             child: Text(
@@ -79,4 +87,13 @@ class _MessagecardState extends State<Messagecard> {
       ],
     );
   }
+
+
+  String formatedTime(dateTimeString) {
+ 
+  DateTime dateTime = DateTime.parse(dateTimeString);
+  String formattedTime = DateFormat('h.mm a').format(dateTime);
+  print(formattedTime);
+  return formattedTime;  // Output: 5.00 PM
+}
 }
