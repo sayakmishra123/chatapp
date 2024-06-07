@@ -1,5 +1,6 @@
-import 'dart:convert';
-import 'dart:math';
+// ignore_for_file: must_be_immutable, avoid_print
+
+
 
 import 'package:chatapp/apis/apis.dart';
 import 'package:chatapp/getx/getx.dart';
@@ -7,7 +8,7 @@ import 'package:chatapp/models/message.dart';
 import 'package:chatapp/models/modelClass.dart';
 import 'package:chatapp/widgets/messagecard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +23,9 @@ class ChatUi extends StatefulWidget {
 
 class _ChatUiState extends State<ChatUi> {
 
-  ScrollController _scrollController = ScrollController();
+ final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController2 = ScrollController();
+   final ScrollController _scrollController3 = ScrollController();
   List<UserMsg> msglist = [];
   late SharedPreferences sp;
   TextEditingController msgController = TextEditingController();
@@ -31,7 +34,7 @@ class _ChatUiState extends State<ChatUi> {
   void initState() {
     getemail().whenComplete(() => null);
    
-    // TODO: implement initState
+
     super.initState();
   }
 
@@ -40,6 +43,7 @@ class _ChatUiState extends State<ChatUi> {
   Future getemail() async {
     sp = await SharedPreferences.getInstance();
     email = sp.getString('email') ?? '';
+    // ignore: prefer_interpolation_to_compose_strings
     print(email + 'dddd');
   }
 
@@ -50,22 +54,23 @@ class _ChatUiState extends State<ChatUi> {
       child: Scaffold(
       
         
-        backgroundColor: Color.fromARGB(255, 208, 225, 238),
+        backgroundColor:const Color.fromARGB(255, 208, 225, 238),
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 208, 225, 238),
+          backgroundColor: const Color.fromARGB(255, 208, 225, 238),
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(40),
+            preferredSize:const Size.fromHeight(70),
             child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
               child:Column(children: [
                 
                
                 Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
+                  
+                margin:  const EdgeInsets.symmetric(horizontal: 20),
+                decoration:const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
                 color:  Color.fromRGBO(144, 164, 174, 1),),
                 height: 40,
-                child:  TabBar(
+                child: const TabBar(
                   unselectedLabelColor: Color.fromARGB(255, 0, 0, 0),
                   labelStyle: TextStyle(color: Colors.white),
                           indicatorSize: TabBarIndicatorSize.tab,
@@ -87,20 +92,20 @@ class _ChatUiState extends State<ChatUi> {
                   ],
                 ),
               ),
-              SizedBox(height: 20,)],)
+               const SizedBox(height: 20,)],)
             ),
           ),
           leading: IconButton(
               onPressed: () {
                 Get.back();
               },
-              icon: Icon(Icons.arrow_back_ios_rounded)),
+              icon:const Icon(Icons.arrow_back_ios_rounded)),
          
         ),
         body: TabBarView(
           children: [
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
+              margin:const EdgeInsets.symmetric(horizontal: 20),
              
               child: StreamBuilder(
                   stream: Apis.getAllMsg(widget.userlist, widget.email),
@@ -135,13 +140,13 @@ class _ChatUiState extends State<ChatUi> {
                             // );
                           });
                     }
-                    return Center(
+                    return const  Center(
                       child: CircularProgressIndicator(),
                     );
                   }),
             ),
-             Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
+            Container(
+              margin:const  EdgeInsets.symmetric(horizontal: 20),
              
               child: StreamBuilder(
                   stream: Apis.getAllMsg(widget.userlist, widget.email),
@@ -149,10 +154,14 @@ class _ChatUiState extends State<ChatUi> {
                     print(snapshot.data);
                     final data = snapshot.data?.docs;
                     if (snapshot.hasData) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToBottom2();
+        });
                       msglist =
                           data!.map((e) => UserMsg.fromJson(e.data())).toList() ??
                               [];
                       return ListView.builder(
+                        controller: _scrollController2,
                           itemCount: msglist.length,
                           itemBuilder: (context, index) {
                             return Messagecard(msglist[index], email);
@@ -172,14 +181,13 @@ class _ChatUiState extends State<ChatUi> {
                             // );
                           });
                     }
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   }),
             ),
-               Container(
-                
-              margin: EdgeInsets.symmetric(horizontal: 20),
+              Container(
+              margin:const  EdgeInsets.symmetric(horizontal: 20),
              
               child: StreamBuilder(
                   stream: Apis.getAllMsg(widget.userlist, widget.email),
@@ -187,10 +195,14 @@ class _ChatUiState extends State<ChatUi> {
                     print(snapshot.data);
                     final data = snapshot.data?.docs;
                     if (snapshot.hasData) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToBottom3();
+        });
                       msglist =
                           data!.map((e) => UserMsg.fromJson(e.data())).toList() ??
                               [];
                       return ListView.builder(
+                        controller: _scrollController3,
                           itemCount: msglist.length,
                           itemBuilder: (context, index) {
                             return Messagecard(msglist[index], email);
@@ -210,7 +222,7 @@ class _ChatUiState extends State<ChatUi> {
                             // );
                           });
                     }
-                    return Center(
+                    return const  Center(
                       child: CircularProgressIndicator(),
                     );
                   }),
@@ -271,7 +283,21 @@ class _ChatUiState extends State<ChatUi> {
   void _scrollToBottom() {
   _scrollController.animateTo(
     _scrollController.position.maxScrollExtent,
-    duration: Duration(milliseconds: 300),
+    duration: const Duration(milliseconds: 300),
+    curve: Curves.easeOut,
+  );
+}
+ void _scrollToBottom2() {
+  _scrollController2.animateTo(
+    _scrollController2.position.maxScrollExtent,
+    duration:const  Duration(milliseconds: 300),
+    curve: Curves.easeOut,
+  );
+}
+ void _scrollToBottom3() {
+  _scrollController3.animateTo(
+    _scrollController3.position.maxScrollExtent,
+    duration:  const Duration(milliseconds: 300),
     curve: Curves.easeOut,
   );
 }
